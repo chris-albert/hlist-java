@@ -1,8 +1,10 @@
 package io.lbert;
 
-import io.lbert.TestClassGeneric;
 import io.lbert.hlist.annotations.Generic;
 import org.junit.Test;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 public class GenericAnnotationTest {
 
@@ -10,12 +12,13 @@ public class GenericAnnotationTest {
   public static class TestClass {
     String foo;
     Integer bar;
+    Optional<LocalDate> date;
   }
 
   @Test
   public void checkOfConstructor() {
 //    TestClassGeneric
-    System.out.println(TestClassGeneric.idk());
+//    System.out.println(io.lbert.TestClassGeneric.);
 //    TestClass tc = TestClass.of("hi", 10);
   }
 
