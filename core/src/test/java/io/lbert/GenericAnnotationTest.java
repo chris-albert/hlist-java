@@ -1,5 +1,6 @@
 package io.lbert;
 
+import io.lbert.TestClassGeneric;
 import io.lbert.hlist.annotations.Generic;
 import org.junit.Test;
 
@@ -13,6 +14,8 @@ public class GenericAnnotationTest {
 
   @Test
   public void checkOfConstructor() {
+//    TestClassGeneric
+    System.out.println(TestClassGeneric.idk());
 //    TestClass tc = TestClass.of("hi", 10);
   }
 
