@@ -44,7 +44,8 @@ public class Generator {
             .spaces()
             .string(";")
         ).collect(Collectors.toList()))
-        .interleave("\n");
+        .interleave("\n")
+        .string("\n");
   }
 
   public BetterBuilder generatePrivateConstructor() {
@@ -204,7 +205,12 @@ public class Generator {
         .nest(generatePublicOf())
         .nest(generateFrom())
         .nest(generateTo())
+        .string("}\n")
         .build();
+  }
+
+  public String getFilename() {
+    return this.fileName;
   }
 
   public static Generator of(

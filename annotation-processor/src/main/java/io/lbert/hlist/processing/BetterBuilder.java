@@ -1,7 +1,6 @@
 package io.lbert.hlist.processing;
 
-import com.google.common.collect.ImmutableList;
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,10 +35,12 @@ public class BetterBuilder {
       final BetterBuilder left,
       final BetterBuilder right
   ) {
-    return of(new ImmutableList.Builder<Element>()
-        .addAll(left.elements)
-        .addAll(right.elements)
-        .build());
+    final var l = left.elements.toArray(new Element[0]);
+    final var r = right.elements.toArray(new Element[0]);
+    final var t = Stream.of(l, r).flatMap(Stream::of)
+        .toArray(Element[]::new);
+
+    return of(Arrays.asList(t));
   }
 
   public BetterBuilder map(Function<String, String> strFunc) {
