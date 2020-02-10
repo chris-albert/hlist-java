@@ -15,6 +15,12 @@ public class GenericAnnotationTest {
     Optional<LocalDate> date;
   }
 
+  interface TestClassI {
+    String foo();
+    Integer bar();
+    Optional<LocalDate> date();
+  }
+
   @Test
   public void checkOfConstructor() {
 //    TestClassGeneric

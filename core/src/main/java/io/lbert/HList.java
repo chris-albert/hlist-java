@@ -11,12 +11,20 @@ public class HList<A extends HList<A>> {
   }
 
   public static final class HCons<H, T extends HList<T>> extends HList<HCons<H, T>> {
-    final H head;
-    final T tail;
+    private final H head;
+    private final T tail;
 
     private HCons(final H head, final T tail) {
       this.head = head;
       this.tail = tail;
+    }
+
+    public H head() {
+      return this.head;
+    }
+
+    public T tail() {
+      return this.tail;
     }
   }
 

@@ -10,8 +10,8 @@ public class HListTest {
   @Test
   public void asdf() {
     HCons<String, HCons<Integer, HNil>> hlist = cons("hi", cons(10, nil()));
-    assertEquals(hlist.head, "hi");
-    assertEquals(hlist.tail.head, (Integer) 10);
+    assertEquals(hlist.head(), "hi");
+    assertEquals(hlist.tail().head(), (Integer) 10);
   }
 
   public static class TestClass {
@@ -29,7 +29,7 @@ public class HListTest {
     }
 
     public static TestClass from(HCons<String, HCons<Integer, HNil>> hlist) {
-      return of(hlist.head, hlist.tail.head);
+      return of(hlist.head(), hlist.tail().head());
     }
 
     public HCons<String, HCons<Integer, HNil>> to() {
@@ -44,7 +44,7 @@ public class HListTest {
     assertEquals(tc.foo, "hi");
     assertEquals(tc.bar, (Integer) 10);
     HCons<String, HCons<Integer, HNil>> otherHList = tc.to();
-    assertEquals(otherHList.head, "hi");
-    assertEquals(otherHList.tail.head, (Integer) 10);
+    assertEquals(otherHList.head(), "hi");
+    assertEquals(otherHList.tail().head(), (Integer) 10);
   }
 }
