@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.util.Optional;
 import static org.junit.Assert.*;
-import static io.lbert.HList.*;
+import static io.lbert.hlist.HList.*;
 
 public class GenericAnnotationTest {
 

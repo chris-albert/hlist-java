@@ -240,7 +240,7 @@ public class Generator {
 
     return BetterBuilder.empty()
         .nest(packageBuilder)
-        .nest(BetterBuilder.ofString("import static io.lbert.HList.*;\n\n"))
+        .nest(BetterBuilder.ofString("import static io.lbert.hlist.HList.*;\n\n"))
         .nest(classDef)
         .nest(generateFields().newline())
         .nest(generatePrivateConstructor().newline())
