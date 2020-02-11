@@ -46,8 +46,8 @@ public class GenericProcessor extends AbstractProcessor {
         .map(annotation -> {
           return roundEnv.getElementsAnnotatedWith(annotation).stream()
               .flatMap(el -> {
-                if (el.getKind() != ElementKind.CLASS) {
-                  error(el, "Only classes can be annotated with @%s",
+                if (el.getKind() != ElementKind.INTERFACE) {
+                  error(el, "Only interfaces can be annotated with @%s",
                       annotation.getClass().getSimpleName());
                   return Stream.empty();
                 } else {
@@ -65,20 +65,14 @@ public class GenericProcessor extends AbstractProcessor {
   private void writeFile(TypeElement typeElement) {
 
     final Generator generator = Generator.of(typeElement, elementUtils);
-    if(true) {
-      try {
-        JavaFileObject jfo = filer.createSourceFile(generator.getFilename());
-        PrintWriter out = new PrintWriter(jfo.openWriter());
-        out.print(generator.generate());
-        out.close();
-      } catch (Exception e) {
-        System.out.println("Error writing file: " + e.getMessage());
-      }
+    try {
+      JavaFileObject jfo = filer.createSourceFile(generator.getFilename());
+      PrintWriter out = new PrintWriter(jfo.openWriter());
+      out.print(generator.generate());
+      out.close();
+    } catch (Exception e) {
+      System.out.println("Error writing file: " + e.getMessage());
     }
-  }
-
-  private void log(String s) {
-    System.out.println(String.format("GenericProcessor.log: %s", s));
   }
 
   private void error(Element e, String msg, Object... args) {

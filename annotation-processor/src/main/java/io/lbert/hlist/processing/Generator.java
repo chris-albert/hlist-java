@@ -1,11 +1,10 @@
 package io.lbert.hlist.processing;
 
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -18,19 +17,31 @@ public class Generator {
   private final String fileName;
   private final String packageName;
   private final String className;
+  private final String interfaceName;
   private final List<Field> fields;
 
-  private Generator(String fileName, String packageName, String className, List<Field> fields) {
+  private Generator(
+      final String fileName,
+      final String packageName,
+      final String className,
+      final String interfaceName,
+      final List<Field> fields
+  ) {
     this.fileName = fileName;
     this.packageName = packageName;
     this.className = className;
+    this.interfaceName = interfaceName;
     this.fields = fields;
   }
 
   public static Generator of(
-      String fileName, String packageName, String className, List<Field> fields
+      final String fileName,
+      final String packageName,
+      final String className,
+      final String interfaceName,
+      final List<Field> fields
   ) {
-    return new Generator(fileName, packageName, className, fields);
+    return new Generator(fileName, packageName, className, interfaceName, fields);
   }
 
   public BetterBuilder generateFields() {
@@ -98,7 +109,7 @@ public class Generator {
         .string("public")
         .string("static")
         .string(className)
-        .string("from(")
+        .string("from(final")
         .nest(
             generateHListType()
             .string("hlist")
@@ -157,9 +168,10 @@ public class Generator {
     return BetterBuilder.nests(
         fields.stream().map(field ->
             BetterBuilder.empty()
-            .string(field.className)
-            .string(field.name)
-            .spaces()
+                .string("final")
+                .string(field.className)
+                .string(field.name)
+                .spaces()
         ).collect(Collectors.toList())
     )
         .interleave(", ")
@@ -182,6 +194,34 @@ public class Generator {
         .nest(end));
   }
 
+  private BetterBuilder generateGetters() {
+    return BetterBuilder.nests(fields.stream()
+        .map(this::generateGetter)
+        .collect(Collectors.toList()));
+  }
+
+  private BetterBuilder generateGetter(Field field) {
+    return BetterBuilder.empty()
+        .string("@Override")
+        .newline()
+        .string("public")
+        .string(field.className)
+        .string(field.name)
+        .spaces()
+        .string("() {")
+        .newline()
+        .nest(
+            BetterBuilder.empty()
+            .string("return ")
+            .string("this.")
+            .string(field.name)
+            .string(";")
+        )
+        .newline()
+        .string("}")
+        .newline();
+  }
+
   public String generate() {
     final var packageBuilder = BetterBuilder.empty()
         .string("package ")
@@ -192,6 +232,8 @@ public class Generator {
         .string("public")
         .string("class")
         .string(className)
+        .string("implements")
+        .string(interfaceName)
         .string("{")
         .spaces()
         .string("\n\n");
@@ -200,42 +242,48 @@ public class Generator {
         .nest(packageBuilder)
         .nest(BetterBuilder.ofString("import static io.lbert.HList.*;\n\n"))
         .nest(classDef)
-        .nest(generateFields())
-        .nest(generatePrivateConstructor())
-        .nest(generatePublicOf())
-        .nest(generateFrom())
+        .nest(generateFields().newline())
+        .nest(generatePrivateConstructor().newline())
+        .nest(generatePublicOf().newline())
+        .nest(generateFrom().newline())
         .nest(generateTo())
+        .nest(generateGetters())
         .string("}\n")
         .build();
   }
+
 
   public String getFilename() {
     return this.fileName;
   }
 
   public static Generator of(
-      TypeElement typeElement,
-      Elements elementUtils
+      final TypeElement typeElement,
+      final Elements elementUtils
   ) {
     return of(
         getFilename(typeElement, elementUtils),
         getPackage(typeElement, elementUtils),
         getClassName(typeElement),
+        getInterfaceName(typeElement),
         getFields(typeElement)
     );
   }
 
   private static List<Field> getFields(TypeElement typeElement) {
+    return getFieldsInterface(typeElement);
+  }
+
+  private static List<Field> getFieldsInterface(TypeElement typeElement) {
     return typeElement.getEnclosedElements().stream()
         .flatMap(el -> {
-          if(el.getKind() == ElementKind.FIELD) {
-            final VariableElement ve = (VariableElement) el;
-            if(ve.asType().getKind() == TypeKind.DECLARED) {
-              DeclaredType declaredFieldType = (DeclaredType) ve.asType();
+          if(el.getKind() == ElementKind.METHOD) {
+            final ExecutableElement ee = (ExecutableElement) el;
+            if(ee.asType().getKind() == TypeKind.EXECUTABLE) {
               return Stream.of(
                   Field.of(
-                      ve.getSimpleName().toString(),
-                      declaredFieldType.toString()
+                      ee.getSimpleName().toString(),
+                      ee.getReturnType().toString()
                   )
               );
             }
@@ -260,5 +308,15 @@ public class Generator {
       return className.substring(lastDot + 1) + SUFFIX;
     }
     return "";
+  }
+
+  private static String getInterfaceName(TypeElement typeElement) {
+    return typeElement.getQualifiedName().toString();
+  }
+
+  private static void log(String s) {
+    if(true) {
+      System.out.println(String.format("GenericProcessor.log: %s", s));
+    }
   }
 }

@@ -48,6 +48,8 @@ public class BetterBuilder {
         .flatMap(el -> {
           if(el instanceof StringElement) {
             return Stream.of(StringElement.of(strFunc.apply(((StringElement) el).str)));
+          } else if(el instanceof BuilderElement) {
+            return Stream.of(BuilderElement.of(((BuilderElement) el).builder.map(strFunc)));
           } else {
             return Stream.of(el);
           }
@@ -60,6 +62,10 @@ public class BetterBuilder {
 
   public BetterBuilder spaces() {
     return interleave(" ");
+  }
+
+  public BetterBuilder newline() {
+    return string("\n");
   }
 
   public BetterBuilder surround(final String left, final String right) {

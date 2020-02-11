@@ -12,6 +12,7 @@ public class GeneratorTest {
       Generator.of(
           "io.lbert.TestGeneric",
           "io.lbert",
+          "Test",
           "TestGeneric",
           List.of(
               Field.of("foo", "String"),
@@ -25,7 +26,7 @@ public class GeneratorTest {
     assertEquals(
         "private final String foo;\n" +
         "private final Integer bar;\n" +
-        "private final Option<Boolean> baz;",
+        "private final Option<Boolean> baz;\n",
         generator.generateFields().build()
     );
   }
