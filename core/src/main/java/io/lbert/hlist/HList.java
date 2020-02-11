@@ -18,6 +18,12 @@ public interface HList<A extends HList<A>> {
     return HNil.of();
   }
 
+  static <L extends HList<L>, R extends HList<R>> HList zip(
+      HList<L> left, HList<R> right
+  ) {
+    return null;
+  }
+
   final class HCons<H, T extends HList<T>> implements HList<HCons<H, T>> {
 
     private final H head;
