@@ -6,6 +6,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import java.lang.invoke.MethodType;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -142,6 +143,46 @@ public class Generator {
     return BetterBuilder.zip(def, body).string("\n}\n");
   }
 
+  public BetterBuilder generateTupleFrom() {
+    final var def = BetterBuilder.empty()
+        .string("public")
+        .string("static")
+        .string(className)
+        .string("tupleFrom(final")
+        .nest(
+            generateTupleType()
+                .string("tuple")
+                .spaces()
+        )
+        .string(") {\n")
+        .spaces();
+    final var body2 = BetterBuilder.empty()
+        .string("return")
+        .string("of(")
+        .spaces()
+        .nest(
+            BetterBuilder.nests(
+                IntStream.range(0, fields.size())
+                    .boxed()
+                    .map(i -> {
+                      final var tails = BetterBuilder
+                          .repeat(".tail()", i);
+                      return BetterBuilder.empty()
+                          .string("hlist")
+                          .nest(tails)
+                          .string(".head()");
+                    })
+                    .collect(Collectors.toList())
+            )
+                .commas()
+        )
+        .string(");");
+
+    final var body = BetterBuilder.empty().string("return null;\n");
+
+    return BetterBuilder.zip(def, body).string("\n}\n");
+  }
+
   public BetterBuilder generateTo() {
     final var def = BetterBuilder.empty()
         .string("public")
@@ -194,6 +235,25 @@ public class Generator {
         .nest(end));
   }
 
+  private BetterBuilder generateTupleType() {
+    final var end = BetterBuilder
+        .repeat(">", fields.size() - 1);
+    final var i = new AtomicInteger(0);
+    return BetterBuilder.ofBuilder(BetterBuilder.nests(
+        fields.stream()
+            .map(field ->
+                i.getAndIncrement() == (fields.size() - 1) ?
+                    BetterBuilder.empty()
+                        .string(field.className) :
+                    BetterBuilder.empty()
+                        .string("Tuple<")
+                        .string(field.className)
+            )
+            .collect(Collectors.toList())
+    ).commas()
+        .nest(end));
+  }
+
   private BetterBuilder generateGetters() {
     return BetterBuilder.nests(fields.stream()
         .map(this::generateGetter)
@@ -240,12 +300,14 @@ public class Generator {
 
     return BetterBuilder.empty()
         .nest(packageBuilder)
-        .nest(BetterBuilder.ofString("import static io.lbert.hlist.HList.*;\n\n"))
+        .nest(BetterBuilder.ofString("import static io.lbert.hlist.HList.*;\n"))
+        .nest(BetterBuilder.ofString("import io.lbert.tuple.Tuple;\n\n"))
         .nest(classDef)
         .nest(generateFields().newline())
         .nest(generatePrivateConstructor().newline())
         .nest(generatePublicOf().newline())
         .nest(generateFrom().newline())
+        .nest(generateTupleFrom().newline())
         .nest(generateTo())
         .nest(generateGetters())
         .string("}\n")

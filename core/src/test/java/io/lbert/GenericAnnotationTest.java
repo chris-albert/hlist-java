@@ -1,6 +1,7 @@
 package io.lbert;
 
 import io.lbert.hlist.annotations.Generic;
+import io.lbert.tuple.Tuple;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -17,6 +18,26 @@ public class GenericAnnotationTest {
     String foo();
     Integer bar();
     Optional<LocalDate> date();
+  }
+
+  public static class TestInterfaceTupled {
+    String foo;
+    Integer bar;
+    Optional<LocalDate> date;
+
+    public TestInterfaceTupled(String foo, Integer bar, Optional<LocalDate> date) {
+      this.foo = foo;
+      this.bar = bar;
+      this.date = date;
+    }
+
+    public static TestInterfaceTupled from(Tuple<String, Tuple<Integer, Optional<LocalDate>>> tuple) {
+      return new TestInterfaceTupled(tuple._1, tuple._2._1, tuple._2._2);
+    }
+
+    public Tuple<String, Tuple<Integer, Optional<LocalDate>>> to() {
+      return Tuple.of(foo, Tuple.of(bar, date));
+    }
   }
 
   @Test

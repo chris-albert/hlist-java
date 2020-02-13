@@ -27,8 +27,14 @@ public class HListTest {
   public void zipTest() {
     HCons<String, HCons<Integer, HNil>> left = cons("hi", cons(10, nil()));
     HCons<Boolean, HCons<Double, HNil>> right = cons(true, cons(1.1, nil()));
+    //If left is HNil
+//    HCons<String, HCons<Integer, HNil>> resLeft = //HList.zip(left, nil());
+//    var a = left.zip(right);
+    //If right is HNil
+//    HCons<Boolean, HCons<Double, HNil>> resRight = HList.zip(nil(), right);
 //    HCons<String, HCons<Integer, HCons<Boolean, HCons<Double, HNil>>>> zipped =
 //        HList.zip(left, right);
+//    final var a = HList.zip(left, right);
   }
 
 }

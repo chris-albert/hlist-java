@@ -1,5 +1,7 @@
 package io.lbert.hlist;
 
+import io.lbert.tuple.Tuple;
+
 import java.util.function.Function;
 
 public interface HList<A extends HList<A>> {
@@ -16,12 +18,6 @@ public interface HList<A extends HList<A>> {
 
   static HNil nil() {
     return HNil.of();
-  }
-
-  static <L extends HList<L>, R extends HList<R>> HList zip(
-      HList<L> left, HList<R> right
-  ) {
-    return null;
   }
 
   final class HCons<H, T extends HList<T>> implements HList<HCons<H, T>> {
